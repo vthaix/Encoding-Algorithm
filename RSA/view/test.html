@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .container {
+        max-width: 600px;
+        width: 100%;
+    }
+    
+    .input {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .solving {
+        grid-template-columns: 1fr;
+        margin-left: 30px;
+        width: 160px;
+    }
+    
+    .text {
+        width: 320px;
+        height: 80px;
+    }
+    
+    .res {
+        float: left;
+        width: 500px;
+        height: 80px;
+    }
+    
+    .psw {
+        border: 1px solid black;
+        float: left;
+        height: 40px;
+        width: 150px;
+    }
+    
+    button {
+        height: 40px;
+        width: 70px;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <header class="title">
+            <h1 style="font-family: Arial, Helvetica, sans-serif;">Encoding RSA Algorithm</h1>
+        </header>
+
+        <div class="row">
+            <div class="input">
+                <div>
+                    <label style="display: block;" for="plaintext">Văn bản cần mã hoá</label>
+                    <textarea class="text" id="plaintext" placeholder="Nhập nội dung"></textarea>
+                </div>
+                <div class="solving" style="display: grid;">
+                    <div>
+                        <label style="display: block;" for="plaintext">Nhập mật khẩu</label>
+                        <input class="psw" type="plaintext" id="password" placeholder="Nhập mật khẩu">
+                    </div>
+                    <div class="btns">
+                        <button id="encoding" class="encoding">Mã hoá</button>
+                        <button id="dec">Giải mã</button>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="output">
+                <div>
+                    <label style="display: block;" for="cipher">Kết quả</label>
+                    <textarea class="res" id="cipher" placeholder="Bản mã"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById("encoding").onclick = async() => {
+            const text = document.getElementById("plaintext").value;
+            const r = await fetch("/encode", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    text,
+                    password
+                })
+            });
+            const j = await r.json();
+            document.getElementById("cipher").value = j.cipher || "";
+        };
+
+        document.getElementById("dec").onclick = async() => {
+            const cipher = document.getElementById("cipher").value;
+            const password = document.getElementById("password").value;
+            const r = await fetch("/decode", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    cipher,
+                    password
+                })
+            });
+            const j = await r.json();
+            if (j.plain) {
+                document.getElementById("cipher").value = j.plain;
+            } else {
+                alert("Lỗi giải mã: " + j.error);
+            }
+        };
+    </script>
+
+
+</body>
+
+</html>
